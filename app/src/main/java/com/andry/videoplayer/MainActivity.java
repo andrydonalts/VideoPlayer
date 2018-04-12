@@ -12,9 +12,15 @@ public class MainActivity extends AppCompatActivity implements SelectVideoAdapte
 
     public static final String POSITION_EXTRA = "POSITION_EXTRA";
     public static final String ALL_VIDEOS_EXTRA = "ALL_VIDEOS_EXTRA";
+    public static final String SELECTED_VIDEO_BUNDLE = "SELECTED_VIDEO_BUNDLE";
+    public static final String IS_MULTISELECTED_MODE_BUNDLE = "IS_MULTISELECTED_MODE_BUNDLE";
+
     private AutofitRecyclerView recyclerView;
     private ArrayList<VideoDetails> videos = new ArrayList<>();
     private SelectVideoAdapter selectVideoAdapter;
+
+    private boolean isMultipleSelectMode;
+    ArrayList<VideoDetails> selectedVideos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +28,13 @@ public class MainActivity extends AppCompatActivity implements SelectVideoAdapte
         setContentView(R.layout.activity_main);
 
         getDeviceVideos();
+        selectVideoAdapter = new SelectVideoAdapter(this, videos, this);
+        if (savedInstanceState != null) {
+            getSavedAdapterState(savedInstanceState);
+        }
 
         recyclerView = findViewById(R.id.activity_main_recycler);
         recyclerView.setHasFixedSize(true);
-        selectVideoAdapter = new SelectVideoAdapter(this, videos, this);
         recyclerView.setAdapter(selectVideoAdapter);
     }
 
@@ -41,6 +50,21 @@ public class MainActivity extends AppCompatActivity implements SelectVideoAdapte
     protected void onStart() {
         super.onStart();
         reloadThumbs();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_MULTISELECTED_MODE_BUNDLE, selectVideoAdapter.isMultiSelected());
+        outState.putParcelableArrayList(SELECTED_VIDEO_BUNDLE, selectVideoAdapter.getSelectedVideos());
+    }
+
+    private void getSavedAdapterState(Bundle savedInstanceState) {
+        isMultipleSelectMode = savedInstanceState.getBoolean(IS_MULTISELECTED_MODE_BUNDLE);
+        selectedVideos = savedInstanceState.getParcelableArrayList(SELECTED_VIDEO_BUNDLE);
+        selectVideoAdapter.setSelectedVideos(selectedVideos);
+        selectVideoAdapter.setMultiSelected(isMultipleSelectMode);
+        selectVideoAdapter.notifyDataSetChanged();
     }
 
     private void reloadThumbs() {

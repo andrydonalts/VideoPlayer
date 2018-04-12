@@ -56,4 +56,21 @@ public class VideoDetails implements Parcelable {
             return new VideoDetails[size];
         }
     };
+
+    @Override
+    public boolean equals(Object other){
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof VideoDetails))return false;
+        if (path.equals(((VideoDetails) other).getPath()) && thumbPath.equals(((VideoDetails) other).getThumbPath()))
+            return true;
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = path.hashCode();
+        result = 31 * result + thumbPath.hashCode();
+        return result;
+    }
 }
