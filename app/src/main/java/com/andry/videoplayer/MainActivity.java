@@ -8,10 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements SelectVideoAdapter.OnVideoSelected {
+public class MainActivity extends AppCompatActivity implements SelectVideoAdapter.OnVideoSelected, SelectVideoAdapter.PlaySelectedVideos {
 
     public static final String POSITION_EXTRA = "POSITION_EXTRA";
     public static final String ALL_VIDEOS_EXTRA = "ALL_VIDEOS_EXTRA";
+    public static final String IS_PLAYLIST_EXTRA = "IS_PLAYLIST_EXTRA";
     public static final String SELECTED_VIDEO_BUNDLE = "SELECTED_VIDEO_BUNDLE";
     public static final String IS_MULTISELECTED_MODE_BUNDLE = "IS_MULTISELECTED_MODE_BUNDLE";
 
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements SelectVideoAdapte
         setContentView(R.layout.activity_main);
 
         getDeviceVideos();
-        selectVideoAdapter = new SelectVideoAdapter(this, videos, this);
+        selectVideoAdapter = new SelectVideoAdapter(this, videos, this, this);
         if (savedInstanceState != null) {
             getSavedAdapterState(savedInstanceState);
         }
@@ -38,11 +39,17 @@ public class MainActivity extends AppCompatActivity implements SelectVideoAdapte
         recyclerView.setAdapter(selectVideoAdapter);
     }
 
+
     @Override
     public void onVideoSelected(int position) {
+        startPlayer(position, videos, false);
+    }
+
+    private void startPlayer(int position, ArrayList<VideoDetails> videos, boolean isPlaylist) {
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.putParcelableArrayListExtra(ALL_VIDEOS_EXTRA, videos);
         intent.putExtra(POSITION_EXTRA, position);
+        intent.putExtra(IS_PLAYLIST_EXTRA, isPlaylist);
         startActivity(intent);
     }
 
@@ -87,5 +94,10 @@ public class MainActivity extends AppCompatActivity implements SelectVideoAdapte
         while (cursor.moveToNext()) {
             videos.add(new VideoDetails(cursor.getString(columnIndexData), cursor.getString(thum)));
         }
+    }
+
+    @Override
+    public void playSelectedVideos(ArrayList<VideoDetails> selectedVideos) {
+        startPlayer(0, selectedVideos, true);
     }
 }

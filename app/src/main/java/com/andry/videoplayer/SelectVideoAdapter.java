@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,13 +27,17 @@ public class SelectVideoAdapter extends RecyclerView.Adapter<SelectVideoAdapter.
     private Context context;
     private List<VideoDetails> videos;
     private OnVideoSelected videoSelectedListener;
+    private PlaySelectedVideos playSelectedVideosListener;
     private boolean isMultiSelected = false;
     private ArrayList<VideoDetails> selectedVideos = new ArrayList<>();
     private ActionMode.Callback actionModeCallbacks = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             isMultiSelected = true;
-            menu.add(context.getResources().getString(R.string.delete_button));
+            menu.add(context.getResources().getString(R.string.menu_play_button));
+            menu.add(context.getResources().getString(R.string.menu_delete_button));
+            menu.add(context.getResources().getString(R.string.menu_play_button));
+            menu.add(context.getResources().getString(R.string.menu_play_button));
             return true;
         }
 
@@ -43,7 +48,10 @@ public class SelectVideoAdapter extends RecyclerView.Adapter<SelectVideoAdapter.
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (item.getItemId() == 0) {
+            if (item.getTitle().equals(context.getResources().getString(R.string.menu_play_button))) {
+                playSelectedVideosListener.playSelectedVideos(selectedVideos);
+            }
+            if (item.getTitle().equals(context.getResources().getString(R.string.menu_delete_button))) {
                 deleteSelectedVideos();
             }
             mode.finish();
@@ -58,10 +66,12 @@ public class SelectVideoAdapter extends RecyclerView.Adapter<SelectVideoAdapter.
         }
     };
 
-    public SelectVideoAdapter(Context context, List<VideoDetails> videos, OnVideoSelected videoSelectedListener) {
+    public SelectVideoAdapter(Context context, List<VideoDetails> videos, OnVideoSelected videoSelectedListener,
+                              PlaySelectedVideos playSelectedVideosListener) {
         this.context = context;
         this.videos = videos;
         this.videoSelectedListener = videoSelectedListener;
+        this.playSelectedVideosListener = playSelectedVideosListener;
     }
 
 
@@ -157,6 +167,7 @@ public class SelectVideoAdapter extends RecyclerView.Adapter<SelectVideoAdapter.
     }
 
     private void deleteSelectedVideos() {
+        Log.d("select", "delete video");
         for (VideoDetails video : selectedVideos) {
             File videoFile = new File(video.getPath());
             if (videoFile.exists()) {
@@ -176,5 +187,9 @@ public class SelectVideoAdapter extends RecyclerView.Adapter<SelectVideoAdapter.
 
     interface OnVideoSelected {
         void onVideoSelected(int position);
+    }
+
+    interface PlaySelectedVideos {
+        void playSelectedVideos(ArrayList<VideoDetails> selectedVideos);
     }
 }

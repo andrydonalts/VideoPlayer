@@ -66,7 +66,7 @@ public class VideoDetails implements Parcelable {
             return true;
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         int result = path.hashCode();

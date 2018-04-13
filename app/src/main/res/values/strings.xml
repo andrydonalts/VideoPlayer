@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">VideoPlayer</string>
-    <string name="delete_button">delete</string>
+    <string name="menu_delete_button">delete</string>
+    <string name="menu_play_button">play</string>
 </resources>
