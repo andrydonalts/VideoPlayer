@@ -36,8 +36,6 @@ public class SelectVideoAdapter extends RecyclerView.Adapter<SelectVideoAdapter.
             isMultiSelected = true;
             menu.add(context.getResources().getString(R.string.menu_play_button));
             menu.add(context.getResources().getString(R.string.menu_delete_button));
-            menu.add(context.getResources().getString(R.string.menu_play_button));
-            menu.add(context.getResources().getString(R.string.menu_play_button));
             return true;
         }
 
